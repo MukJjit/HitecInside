@@ -4,14 +4,28 @@ var Post = require('../models/Post');
 var util = require('../util');
 
 // Index
-router.get('/', function(req, res){
-  Post.find({})
+router.get('/', async function(req, res){
+  let page = Math.max(1, parseInt(req.query.page));
+  let limit = Math.max(1, parseInt(req.query.limit));
+  page = !isNaN(page)?page:1;
+  limit = !isNaN(limit)?limit:10;
+
+  let skip = (page-1)*limit;
+  let count = await Post.countDocuments({});
+  let maxPage = Math.ceil(count/limit);
+  let posts = await Post.find({})
     .populate('author')
     .sort('-createdAt')
-    .exec(function(err, posts){
-      if(err) return res.json(err);
-      res.render('posts/index', {posts:posts});
-    });
+    .skip(skip)
+    .limit(limit)
+    .exec();
+
+  res.render('posts/index', {
+    posts:posts,
+    currentPage:page,
+    maxPage:maxPage,
+    limit:limit
+  })
 });
 
 // New
