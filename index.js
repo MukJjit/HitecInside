@@ -6,6 +6,7 @@ var flash = require('connect-flash');
 var session = require('express-session');
 var passport = require('./config/passport');
 var app = express();
+var util = require('./util');
 
 // DB setting
 mongoose.connect(process.env.MONGO_DB);
@@ -39,7 +40,7 @@ app.use(function(req,res,next){
 
 // Routes
 app.use('/', require('./routes/home'));
-app.use('/posts', require('./routes/posts'));
+app.use('/posts', util.getPostQueryString, require('./routes/posts'));
 app.use('/users', require('./routes/users'));
 
 // Port setting
