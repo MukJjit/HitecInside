@@ -76,7 +76,7 @@
 
       </div>     
       
-      <form action="/posts" method="get">
+      <form action="/posts" method="get" class="post-index-tool">
         <div class="form-row">
           <div class="form-group col-3">
             <label style="font-size: 90%">최대 표시글</label>
@@ -87,6 +87,22 @@
               <option value="20" <%= limit==20?'selected':'' %>>20개씩</option>                            
             </select>
           </div>
+
+          <div class="form-group col-9">
+            <label>검색</label>
+            <div class="input-group">
+              <select name="searchType" class="custom-select">
+                <option value="title,body" <%= searchType == 'title,body'?'selected':'' %>>제목 및 글</option>
+                <option value="title" <%= searchType == 'title'?'selected':'' %>>제목</option>
+                <option value="body" <%= searchType == 'body'?'selected':'' %>>글</option>
+              </select>
+              <input minlength="3" type="text" name="searchText" value="<%= searchText %>">
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="submit">검색</button>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </form>
     </div>
