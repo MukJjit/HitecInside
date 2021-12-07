@@ -47,7 +47,7 @@
 
         <div class="col-2">
           <% if(isAuthenticated) { %>
-            <a class="btn btn-primary" href="/posts/new<%= getPostQueryString() %>">New</a>
+            <a class="btn btn-primary" href="/posts/new<%= getPostQueryString() %>">글 작성</a>
           <% } %>
         </div>
 
@@ -82,9 +82,9 @@
             <label style="font-size: 90%">최대 표시글</label>
             <br>
             <select style="width: 100px; height: 40px" name="limit" class="custom-select" onchange="this.parentElement.parentElement.parentElement.submit()">
-              <option value="5" <%= limit==5?'selected':'' %>>5 posts</option>
-              <option value="10" <%= limit==10?'selected':'' %>>10 posts</option>
-              <option value="20" <%= limit==20?'selected':'' %>>20 posts</option>                            
+              <option value="5" <%= limit==5?'selected':'' %>>5개씩</option>
+              <option value="10" <%= limit==10?'selected':'' %>>10개씩</option>
+              <option value="20" <%= limit==20?'selected':'' %>>20개씩</option>                            
             </select>
           </div>
         </div>
