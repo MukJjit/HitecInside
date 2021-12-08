@@ -39,55 +39,70 @@
         </div>
       </div>
 
+      <div class="mt-3">
+        <a class="btn btn-primary" href="/posts<%= getPostQueryString() %>">뒤로가기</a>
+        <% if(post.author && isAuthenticated && currentUser.id == post.author.id) { %>
+          <a class="btn btn-primary" href="/posts/<%= post._id %>/edit<%= getPostQueryString() %>">수정</a>
+          <form action="/posts/<%= post._id %>?_method=delete<%= getPostQueryString(true) %>" method="post" class="d-inline">
+            <a class="btn btn-primary" href="javascript:void(0)" onclick="confirm('정말 삭제하시겠습니까?')?this.parentElement.submit():null;">삭제</a>
+          </form>
+        <% } %>
+      </div>  
+
       <h4 class="mt-3">댓글란</h4>
       <% if(comments.length){ %>
         <div class="mt-3 border-bottom">
           <% comments.forEach(function(comment) { %>
             <div class="border-top pt-1 pb-1">
+              <% if(comment.isDeleted) { %>
+                <div class="text-muted p-2">(삭제된 댓글)</div>
+              <% } else { %>
               <div class="row">
                 <div class="col-3 col-md-2 col-lg-1 pl-4"><%= comment.author.username %></div>
-                <div class="col-9 col-md-10 col-lg-11">
+                  <div id="comment-<%= comment._id %>" class="col-9 col-md-10 col-lg-11 <%= (commentError._id == comment._id)?'comment-edit-enabled':'' %>">
                   <div class="comment-show">
                     <div class="comment-text mb-3"><%= comment.text %></div>
                     <small class="d-block">
-                      (등록됨: <span data-date-time="<%= comment.createdAt %>"></span>)
+                      (등록됨: <span data-date-time="<%= comment.createdAt %>"></span>
+                      <% if(comment.updatedAt){ %>
+                        | Updated : <span data-date-time="<%= comment.updatedAt %>"></span>
+                      <% } %>
+                      ) 
                     </small>
+                    <% if(isAuthenticated && comment.author && currentUser.id == comment.author.id){ %>
+                      <small class="d-block">
+                        <a href="javascript:void(0)" onclick="$('.comment-reply-enabled').removeClass('comment-reply-enabled'); $('.comment-edit-enabled').removeClass('comment-edit-enabled'); $('#comment-<%= comment._id %>').addClass('comment-edit-enabled')">댓글 수정</a>
+                        |
+                        <form action="/comments/<%= comment._id %>?postId=<%= post._id %>&_method=delete<%= getPostQueryString(true) %>" method="post" class="d-inline">
+                          <a href="javascript:void(0)" onclick="confirm('정말 이 댓글을 삭제하시겠습니까?')?this.parentElement.submit():null;">댓글 삭제</a>
+                        </form>
+                      </small>
+                      <% } %>
+                  </div>
+                  <div class="comment-edit">
+                    <%- include('./partials/comment-form', {
+                      actionUrl:'/comments/'+ comment._id + '?postId=' + post._id + '&_method=put',
+                      comment: comment,
+                      commentForm: commentForm,
+                      commentError: commentError, 
+                    }); %>
                   </div>
                 </div>
               </div>
-
+              <% } %> 
             </div>
           <% }) %>
         </div>
-      <% } %>
+      <% } %> 
 
       <div class="mt-3">
-        <a class="btn btn-primary" href="/posts<%= getPostQueryString() %>">뒤로가기</a>
-        <% if(post.author && isAuthenticated && currentUser.id == post.author.id) { %>
-          <a class="btn btn-primary" href="/posts/<%= post._id %>/edit<%= getPostQueryString() %>">확인</a>
-          <form action="/posts/<%= post._id %>?_method=delete<%= getPostQueryString(true) %>" method="post" class="d-inline">
-            <a class="btn btn-primary" href="javascript:void(0)" onclick="confirm('Do you want to delete this?')?this.parentElement.submit():null;">삭제</a>
-          </form>
-        <% } %>
+        <%- include('./partials/comment-form', {
+          actionUrl:'/comments?postId=' + post._id,
+          comment: {},
+          commentForm: commentForm,
+          commentError: commentError, 
+        }); %>
       </div>
-
-      <div class="mt-3">
-        <form action="/comments?postId=<%= post._id %><%= getPostQueryString(true) %>" method="post">
-          <fieldset <%= !isAuthenticated?'disabled':'' %>>
-            <div class="row">
-              <div class="col-8">
-                <textarea name="text" rows="2" class="form-control <%= (commentError.errors.text)?'is-invalid':'' %>"><%= commentForm.form.text %></textarea>
-              </div>
-              <div class="col-4">
-                <button type="submit" class="btn btn-primary h-100 mr-2">작성</button>
-              </div>
-            </div>
-            <% if(commentError.errors.text) { %>
-              <span class="invalid-feedback d-block"><%= commentError.errors.text.message %></span>
-              <% } %>
-          </fieldset>
-        </form>
-      </div>      
 
     </div>
   </body>
