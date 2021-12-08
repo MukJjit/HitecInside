@@ -40,6 +40,10 @@ body {
 }
 
 .highlighted {
-  color: orangered;
   background-color: yellow;
+}
+
+.post-body,
+.comment-text {
+  white-space: pre-line;
 }
