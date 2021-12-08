@@ -3,6 +3,7 @@ var express  = require('express');
 var router = express.Router();
 var Post = require('../models/Post');
 var util = require('../util');
+var User = require('../models/User')
 
 // Index
 router.get('/', async function(req, res){
@@ -11,17 +12,21 @@ router.get('/', async function(req, res){
   page = !isNaN(page)?page:1;
   limit = !isNaN(limit)?limit:10;
 
-  let searchQuery = createSearchQuery(req.query);
-
   let skip = (page-1)*limit;
-  let count = await Post.countDocuments(searchQuery);
-  let maxPage = Math.ceil(count/limit);
-  let posts = await Post.find(searchQuery)
+  let searchQuery = await createSearchQuery(req.query);
+  let maxPage = 0;
+  let posts = [];
+
+  if(searchQuery) {
+    let count = await Post.countDocuments(searchQuery);
+    maxPage = Math.ceil(count/limit);
+    posts = await Post.find(searchQuery)
     .populate('author')
     .sort('-createdAt')
     .skip(skip)
     .limit(limit)
     .exec();
+  }
 
   res.render('posts/index', {
     posts:posts,
@@ -110,7 +115,7 @@ function checkPermission(req, res, next) {
   });
 }
 
-function createSearchQuery(queries) {
+async function createSearchQuery(queries) {
   let searchQuery = {};
   if(queries.searchType && queries.searchText && queries.searchText.length >= 3) {
     let searchTypes = queries.searchType.toLowerCase().split(',');
@@ -123,7 +128,21 @@ function createSearchQuery(queries) {
       postQueries.push({ body: { $regex: new RegExp(queries.searchText,'i')}});
     }
 
+    if(searchTypes.indexOf('author!')>=0) {
+      let user = await User.findOne({ username: queries.searchText }).exec();
+      if(user) postQueries.push({author:user._id});
+    }
+
+    if(searchTypes.indexOf('author')>=0) {
+      let users = await User.find({ username: { $regex: new RegExp(queries.searchText, 'i')}}).exec();
+      let userIds = [];
+      for(let user of users) {
+        userIds.push(user._id);
+      }
+      if(userIds.length>0) postQueries.push({author:{$in:userIds}});
+    }
     if(postQueries.length > 0) searchQuery = {$or:postQueries};
+    else searchQuery = null;
   }
 
   return searchQuery;
