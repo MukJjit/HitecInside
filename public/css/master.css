@@ -20,6 +20,11 @@ body {
   width: 100px;
 }
 
+.board-table .title-container:hover .title-commments,
+.board-table .title-container:hover .title-next {
+  text-decoration: underline;
+}
+
 .post-body{
   white-space: pre-line;
 }
@@ -58,3 +63,4 @@ body {
 .comment-reply-enabled .comment-reply {
   display:inherit;
 }
+
