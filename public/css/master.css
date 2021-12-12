@@ -49,10 +49,12 @@ body {
 }
 
 .comment-edit,
+.comment-reply,
 .comment-edit-enabled .comment-show {
-  display: none;
+  display:none;
 }
 
-.comment-edit-enabled .comment-edit {
-  display: inherit;
+.comment-edit-enabled .comment-edit,
+.comment-reply-enabled .comment-reply {
+  display:inherit;
 }
