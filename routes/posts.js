@@ -1,10 +1,13 @@
 const { query } = require('express');
 var express  = require('express');
 var router = express.Router();
+var multer = require('multer');
+var upload = multer({ dest: 'uploadedFiles/' });
 var Post = require('../models/Post');
-var util = require('../util');
-var User = require('../models/User')
+var File = require('../models/Files');
+var User = require('../models/User');
 var Comment = require('../models/Comment');
+var util = require('../util');
 
 // Index
 router.get('/', async function(req, res){
@@ -70,13 +73,20 @@ router.get('/new', util.isLoggedin, function(req, res){
 });
 
 // create
-router.post('/', util.isLoggedin, function(req, res){
+router.post('/', util.isLoggedin, upload.single('attachment'), async function(req, res){
+  var attachment = req.file?await File.createNewInstance(req.file, req.user._id):undefined;
+  req.body.attachment = attachment;
   req.body.author = req.user._id;
   Post.create(req.body, function(err, post){
     if(err){
       req.flash('post', req.body);
       req.flash('errors', util.parseError(err));
       return res.redirect('/posts/new'+res.locals.getPostQueryString());
+    }
+
+    if(attachment) {
+      attachment.postId = post._id;
+      attachment.save();
     }
     res.redirect('/posts'+res.locals.getPostQueryString(false, {page:1, searchText:''}));
   });
@@ -88,7 +98,7 @@ router.get('/:id', function(req, res){
   var commentError = req.flash('commentError')[0] || {_id: null, parentComment: null, errors: {}};
 
   Promise.all([
-    Post.findOne({_id:req.params.id}).populate({ path: 'author', select: 'username' }),
+    Post.findOne({_id:req.params.id}).populate({ path: 'author', select: 'username' }).populate({path:'attachment',match:{isDeleted:false}}),
     Comment.find({post:req.params.id}).sort('createdAt').populate({ path: 'author', select: 'username'})
   ])
   .then(([post, comments]) => {
