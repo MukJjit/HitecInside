@@ -10,7 +10,7 @@ router.get('/:serverFileName/:originalFileName', (req, res) => {
         if(stream) {
             res.writeHead(200, {
                 'Content-Type': 'application/octet-stream',
-                'Content-Disposition': 'attachment; fileName=' + file.originalFileName
+                'Content-Disposition': 'attachment; fileName=' + encodeURI(file.originalFileName)
             });
             stream.pipe(res);
         }
