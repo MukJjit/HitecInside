@@ -1,4 +1,6 @@
 var mongoose = require('mongoose');
+var fs = require('fs');
+var path = require('path');
 
 var fileSchema = mongoose.Schema({
     originalFileName:{type:String},
@@ -8,6 +10,25 @@ var fileSchema = mongoose.Schema({
     postId:{type:mongoose.Schema.Types.ObjectId, ref:'post'},
     isDeleted:{type:Boolean, default:false},
 });
+
+fileSchema.methods.processDelete = function() {
+    this.isDeleted = true;
+    this.save();
+};
+
+fileSchema.methods.getFileStream = function() {
+    var stream;
+    var filePath = path.join(__dirname, '..', 'uploadedFiles', this. serverFileName);
+    var fileExists = fs.existsSync(filePath);
+    if(fileExists) {
+        stream = fs.createReadStream(filePath);
+    }
+    else {
+        this.processDelete();
+    }
+
+    return stream;
+}
 
 var File = mongoose.model('file', fileSchema);
 

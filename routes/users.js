@@ -28,6 +28,7 @@ router.post('/', function(req, res){
       req.flash('errors', util.parseError(err));
       return res.redirect('/users/new');
     }
+    window.alert('가입되었습니다.');
     res.redirect('/');
   });
 });
