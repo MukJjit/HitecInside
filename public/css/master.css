@@ -4,6 +4,7 @@ body {
 .breadcrumb-item {
   font-size: 0.8em !important;
 }
+
 .ellipsis{
   display: block;
   width: 100%;
@@ -28,14 +29,11 @@ body {
   text-align: center;
 }
 
-.board-table .title-container:hover .title-commments,
-.board-table .title-container:hover .title-next {
-  text-decoration: underline;
-}
-
-.post-body{
+.post-body,
+.comment-text {
   white-space: pre-line;
 }
+
 .post-info{
   font-size: 0.8em;
 }
@@ -54,11 +52,6 @@ body {
 
 .highlighted {
   background-color: yellow;
-}
-
-.post-body,
-.comment-text {
-  white-space: pre-line;
 }
 
 .comment-edit,
