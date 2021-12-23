@@ -5,10 +5,10 @@ https://www.a-mean-blog.com/ko/blog/
 업로드된 코드를 사용하려면 index.js의 mongoose.connect() 등을 수정하고, API를 인스톨해야 합니다.      
       
 다음과 같은 API들이 사용되었습니다.      
-+express
-+mongoose
-+body-parser
-+method-override
-+connect-flash
-+express-session
-+passport
++express    
++mongoose    
++body-parser   
++method-override   
++connect-flash   
++express-session   
++passport   
