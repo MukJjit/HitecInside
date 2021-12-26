@@ -8,7 +8,7 @@ https://www.a-mean-blog.com/ko/blog/
 
 
 ---------
-##실행은?
+## 실행은?
 
 
 본 프로젝트가 담긴 폴더에서 'npm start' 명령어를 터미널에 치세요.
